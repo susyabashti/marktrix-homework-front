@@ -1,11 +1,14 @@
 import React from "react";
 import { fetchNameResults } from "src/store/actions/search";
-import { useAppDispatch } from "src/store/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "src/store/hooks/hooks";
+import { selectLoadingState } from "src/store/selectors/search";
 import tw from "tailwind-styled-components/dist/tailwind";
+import { TbFidgetSpinner } from "react-icons/tb";
 
 export const SearchBox = () => {
-  const inputRef = React.useRef<HTMLInputElement | null>(null);
   const dispatch = useAppDispatch();
+  const isLoading = useAppSelector(selectLoadingState);
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   const searchName = () => {
     if (inputRef.current?.value) {
@@ -18,7 +21,9 @@ export const SearchBox = () => {
   return (
     <Container>
       <Input type="text" ref={inputRef} maxLength={16} />
-      <SearchButton onClick={searchName}>Check</SearchButton>
+      <SearchButton disabled={isLoading} onClick={searchName}>
+        {isLoading ? <LoadingSpinner /> : "Check"}
+      </SearchButton>
     </Container>
   );
 };
@@ -44,12 +49,21 @@ const Input = tw.input`
 `;
 
 const SearchButton = tw.button`
+  h-[30px]
+  w-[140px]
   bg-blue-600
   text-white
-  hover:bg-blue-500
+  hover:bg-blue-700
+  disabled:bg-blue-200
   rounded-full
   py-1
   px-5
+  text-center
   justify-self-center
   transition
+`;
+
+const LoadingSpinner = tw(TbFidgetSpinner)`
+  animate-spin
+  mx-auto
 `;
